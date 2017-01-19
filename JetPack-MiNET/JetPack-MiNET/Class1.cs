@@ -82,7 +82,7 @@ namespace JetPack_MiNET
             //arrow.HitEvent += testary;
 
             arrow.SpawnEntity();
-           /* var setEntityLinkPk = McpeSetEntityLink.CreateObject();
+            var setEntityLinkPk = McpeSetEntityLink.CreateObject();
             setEntityLinkPk.riderId = 0;
             setEntityLinkPk.riddenId = arrow.EntityId;
             setEntityLinkPk.linkType = 2;
@@ -90,8 +90,7 @@ namespace JetPack_MiNET
                      public static final byte TYPE_RIDE = 1;
                  public static final byte TYPE_PASSENGER = 2; 
              */
-            //new Task(() => player.Level.RelayBroadcast(setEntityLinkPk)).Start();
-
+            new Task(() => player.Level.RelayBroadcast(setEntityLinkPk)).Start();
 
 
 
@@ -102,22 +101,17 @@ namespace JetPack_MiNET
                 while (arrow.Velocity.Length() > 0)
                 {
                     pos = arrow.KnownPosition;
+                   McpeMovePlayer mp = McpeMovePlayer.CreateObject();
+                    mp.entityId = 0;
+                    mp.x = pos.X;
+                    mp.y = pos.Y;
+                    mp.z = pos.Z;
+                    mp.pitch = player.KnownPosition.Pitch;
+                    mp.headYaw = player.KnownPosition.HeadYaw;
+                    mp.yaw = player.KnownPosition.Yaw;
+                    new Task(() => player.Level.RelayBroadcast(mp)).Start();
                     Thread.Sleep(100);
                 }
-                var CurrentLocation = player.KnownPosition;
-                PlayerLocation lookAtPos = LookAt(CurrentLocation.ToVector3() + new Vector3(0, 1.62f, 0), arrow.KnownPosition.ToVector3());
-
-
-                // First just rotate towards target pos
-                McpeMovePlayer movePlayerPacket = McpeMovePlayer.CreateObject();
-                movePlayerPacket.entityId = player.EntityId;
-                movePlayerPacket.x = pos.X;
-                movePlayerPacket.y = pos.Y;
-                movePlayerPacket.z = pos.Z; 
-                movePlayerPacket.yaw = lookAtPos.Yaw;
-                movePlayerPacket.pitch = lookAtPos.Pitch;
-                movePlayerPacket.headYaw = lookAtPos.HeadYaw;
-                new Task(() => player.Level.RelayBroadcast(movePlayerPacket)).Start();
                 /*Console.Write("done!!" + pos);
                 Block block = BlockFactory.GetBlockById((byte)1);
                 block.Coordinates = new BlockCoordinates((int)arrow.KnownPosition.X, (int)arrow.KnownPosition.Y - 2, (int)arrow.KnownPosition.Z);
@@ -128,41 +122,6 @@ namespace JetPack_MiNET
             });
             return packet;
         }
-
-
-        public static PlayerLocation LookAt(Vector3 sourceLocation, Vector3 targetLocation)
-        {
-            var dx = targetLocation.X - sourceLocation.X;
-            var dz = targetLocation.Z - sourceLocation.Z;
-
-            var pos = new PlayerLocation(sourceLocation.X, sourceLocation.Y, sourceLocation.Z);
-            if (dx > 0 || dz > 0)
-            {
-                double tanOutput = 90 - RadianToDegree(Math.Atan(dx / (dz)));
-                double thetaOffset = 270d;
-                if (dz < 0)
-                {
-                    thetaOffset = 90;
-                }
-                var yaw = thetaOffset + tanOutput;
-
-                double bDiff = Math.Sqrt((dx * dx) + (dz * dz));
-                var dy = (sourceLocation.Y) - (targetLocation.Y);
-                double pitch = RadianToDegree(Math.Atan(dy / (bDiff)));
-
-                pos.Yaw = (float)yaw;
-                pos.HeadYaw = (float)yaw;
-                pos.Pitch = (float)pitch;
-            }
-
-            return pos;
-        }
-
-        private static double RadianToDegree(double angle)
-        {
-            return angle * (180.0 / Math.PI);
-        }
-
 
 
 
