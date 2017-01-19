@@ -83,71 +83,36 @@ namespace JetPack_MiNET
 
             arrow.SpawnEntity();
             var setEntityLinkPk = McpeSetEntityLink.CreateObject();
-            setEntityLinkPk.riderId = arrow.EntityId;
-            setEntityLinkPk.riddenId =0;
-            setEntityLinkPk.linkType = 1;
+            setEntityLinkPk.riderId = 0;
+            setEntityLinkPk.riddenId = arrow.EntityId;
+            setEntityLinkPk.linkType = 2;
             /*    public static final byte TYPE_REMOVE = 0;
                      public static final byte TYPE_RIDE = 1;
                  public static final byte TYPE_PASSENGER = 2; 
              */
+            new Task(() => player.Level.RelayBroadcast(setEntityLinkPk)).Start();
 
-            /*new Task(() => {
-                if (player != null) player.Level.RelayBroadcast(setEntityLinkPk);
-            }).Start();*/
 
-            /*var setmotion = new McpeSetEntityMotion();
-            setmotion.entityId = player.EntityId;
-            var a = player.KnownPosition.ToVector3();
-            a.X = 100;
-            setmotion.velocity = a;
-            player.SendPackage(setEntityLinkPk);*/
 
-            /*McpeAddEntity pk = new McpeAddEntity();
-            pk.entityType = (uint)EntityType.Minecart;
-            pk.entityId = EntityManager.EntityIdUndefined;
-            pk.x = player.KnownPosition.X;
-            pk.y = player.KnownPosition.Y;
-            pk.z = player.KnownPosition.Z;
-            player.SendPackage(pk);
-
-            setEntityLinkPk.riderId = pk.entityId;
-            setEntityLinkPk.riddenId = 0;
-            setEntityLinkPk.linkType = 1;*/
-
-            /*    public static final byte TYPE_REMOVE = 0;
-                     public static final byte TYPE_RIDE = 1;
-                 public static final byte TYPE_PASSENGER = 2; 
-             */
-            //player.SendPackage(setEntityLinkPk);
-            //player.SendPackage(setEntityLinkPk);
-            //player.BroadcastSetEntityData();
-
-            // player.SendPackage(setEntityLinkPk);
-
-            McpeSetEntityMotion motions = McpeSetEntityMotion.CreateObject();
-            motions.entityId = 0;
-            var a = player.KnownPosition.ToVector3();
-            a.X = 100;
-            motions.velocity = a;
-            new Task(() => player.Level.RelayBroadcast(motions)).Start();
-
-            McpeMoveEntity moveEntity = McpeMoveEntity.CreateObject();
-            moveEntity.entityId = 0;
-            var b = player.KnownPosition;
-            b.Y = 100;
-            moveEntity.position =b;
-            new Task(() => player.Level.RelayBroadcast(moveEntity)).Start();
 
             Task.Run(() =>
             {
-                /*PlayerLocation pos = null;
+                PlayerLocation pos = null;
                 while (arrow.Velocity.Length() > 0)
                 {
                     pos = arrow.KnownPosition;
-                    Console.Write(pos);
+                   McpeMovePlayer mp = McpeMovePlayer.CreateObject();
+                    mp.entityId = 0;
+                    mp.x = pos.X;
+                    mp.y = pos.Y;
+                    mp.z = pos.Z;
+                    mp.pitch = player.KnownPosition.Pitch;
+                    mp.headYaw = player.KnownPosition.HeadYaw;
+                    mp.yaw = player.KnownPosition.Yaw;
+                    new Task(() => player.Level.RelayBroadcast(mp)).Start();
                     Thread.Sleep(100);
                 }
-                //Console.Write("done!!" + pos);
+                /*Console.Write("done!!" + pos);
                 Block block = BlockFactory.GetBlockById((byte)1);
                 block.Coordinates = new BlockCoordinates((int)arrow.KnownPosition.X, (int)arrow.KnownPosition.Y - 2, (int)arrow.KnownPosition.Z);
                 //arrow.Level.SetBlock(block);
