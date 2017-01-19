@@ -95,23 +95,34 @@ namespace JetPack_MiNET
 
 
 
-            Task.Run(() =>
+            Level level = player.Level;
+            Mob entity = new Mob(EntityType.Zombie, level)
+            {
+                KnownPosition = player.KnownPosition,
+            };
+            entity.SpawnEntity();
+            entity.IsAngry = true;
+            entity.
+        
+
+        Task.Run(() =>
             {
                 PlayerLocation pos = null;
                 while (arrow.Velocity.Length() > 0)
                 {
                     pos = arrow.KnownPosition;
-                   McpeMovePlayer mp = McpeMovePlayer.CreateObject();
-                    mp.entityId = 0;
-                    mp.x = pos.X;
-                    mp.y = pos.Y;
-                    mp.z = pos.Z;
-                    mp.pitch = player.KnownPosition.Pitch;
-                    mp.headYaw = player.KnownPosition.HeadYaw;
-                    mp.yaw = player.KnownPosition.Yaw;
-                    new Task(() => player.Level.RelayBroadcast(mp)).Start();
+                   
                     Thread.Sleep(100);
                 }
+                McpeMovePlayer mp = McpeMovePlayer.CreateObject();
+                mp.entityId = 0;
+                mp.x = pos.X;
+                mp.y = pos.Y;
+                mp.z = pos.Z;
+                mp.pitch = player.KnownPosition.Pitch;
+                mp.headYaw = player.KnownPosition.HeadYaw;
+                mp.yaw = player.KnownPosition.Yaw;
+                new Task(() => player.Level.RelayBroadcast(mp)).Start();
                 /*Console.Write("done!!" + pos);
                 Block block = BlockFactory.GetBlockById((byte)1);
                 block.Coordinates = new BlockCoordinates((int)arrow.KnownPosition.X, (int)arrow.KnownPosition.Y - 2, (int)arrow.KnownPosition.Z);
